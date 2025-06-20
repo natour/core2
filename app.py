@@ -7,7 +7,7 @@ from io import BytesIO
 from matplotlib.backends.backend_pdf import PdfPages
 
 st.set_page_config(layout="wide")
-st.title("Inverter Log Viewer with Filtering, PDF Export & Interactive Charts")
+st.title("Core2 Inverter Log Viewer with Filtering, PDF Export & Interactive Charts")
 
 # Upload log and event CSVs
 log_files = st.file_uploader("Upload *_RunRecord_begin*.csv files", type="csv", accept_multiple_files=True)
