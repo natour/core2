@@ -30,7 +30,7 @@ if log_files and event_files:
 
     # Load event files
     for ef in event_files:
-        df = pd.read_csv(ef, encoding='mbcs')
+        df = pd.read_csv(ef, encoding='utf-8')
         df = df.iloc[::-1]
         try:
             df['FullEvent'] = df['Fault Code'].map(str) + "::" + df['Fault Name'].map(str)
