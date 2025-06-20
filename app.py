@@ -43,7 +43,7 @@ if log_files and event_files:
 
     # Load log files
     for lf in log_files:
-        df = pd.read_csv(lf, encoding='mbcs')
+        df = pd.read_csv(lf, encoding='utf-8')
         df['Time'] = pd.to_datetime(df['Time'], format='%y-%m-%d %H:%M:%S')
         df = df.iloc[::-1].set_index('Time')
         df = df[[col for col in df.columns if col in columns]]
