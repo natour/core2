@@ -5,6 +5,7 @@ import matplotlib.dates as mdates
 import plotly.graph_objects as go
 from io import BytesIO
 from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.colors as mcolors
 
 st.set_page_config(layout="wide")
 st.title("Core2 Inverter Log Viewer with Filtering, PDF Export & Interactive Charts")
@@ -54,6 +55,8 @@ if log_files and event_files:
     selected_day = st.selectbox("Select Day", [str(d) for d in all_days])
     selected_channels = st.multiselect("Select Channels to Plot", fcolumns, default=fcolumns[:5])
 
+    color_map = dict(zip(columns, list(mcolors.TABLEAU_COLORS)))
+
     # Plotly Interactive Charts
     st.markdown("### Interactive Zoomable Charts")
     for i, serial in enumerate(serials):
@@ -77,34 +80,25 @@ if log_files and event_files:
                 unique_events = list(toplotE['FullEvent'].unique())
                 event_y = [unique_events.index(evt) for evt in toplotE['FullEvent']]
 
-                fig.add_trace(go.Scatter(
-                    x=toplotE.index,
-                    y=event_y,
-                    mode='markers+text',
-                    name='Events',
-                    marker=dict(color='red', symbol='x', size=10),
-                    text=toplotE['FullEvent'],
-                    hovertemplate="%{text}<br>%{x|%Y-%m-%d %H:%M:%S}<extra></extra>"
-                ))
+                for evt, x_time, y_pos in zip(toplotE['FullEvent'], toplotE.index, event_y):
+                    fig.add_trace(go.Scatter(
+                        x=[x_time],
+                        y=[evt],
+                        mode='markers+text',
+                        name='Event',
+                        marker=dict(color='red', symbol='x', size=10),
+                        text=[evt],
+                        textposition='middle right',
+                        hovertemplate=f"{evt}<br>%{{x|%Y-%m-%d %H:%M:%S}}<extra></extra>"
+                    ))
 
-                fig.update_layout(
-                    yaxis2=dict(
-                        title="Events",
-                        overlaying="y",
-                        side="right",
-                        tickmode="array",
-                        tickvals=list(range(len(unique_events))),
-                        ticktext=unique_events,
-                        showgrid=False
-                    )
-                )
+                fig.update_yaxes(title_text=col, secondary_y=False)
 
             fig.update_layout(
                 title=f"{col} ({serial}) - {selected_day}",
                 xaxis_title="Time",
-                yaxis_title=col,
                 height=500,
-                showlegend=True
+                showlegend=False
             )
 
             st.plotly_chart(fig, use_container_width=True)
@@ -131,13 +125,13 @@ if log_files and event_files:
 
                     if not toplotE.empty:
                         unique_events = list(toplotE['FullEvent'].unique())
-                        event_y = [unique_events.index(e) for e in toplotE['FullEvent']]
+                        event_colors = dict(zip(unique_events, mcolors.TABLEAU_COLORS))
 
-                        ax2 = ax.twinx()
-                        ax2.plot(toplotE.index, event_y, 'rx')
-                        ax2.set_yticks(range(len(unique_events)))
-                        ax2.set_yticklabels(unique_events, fontsize=8)
-                        ax2.set_ylabel("Events")
+                        for x, evt in zip(toplotE.index, toplotE['FullEvent']):
+                            ax.axvline(x=x, color=event_colors.get(evt, 'red'), linestyle='--', linewidth=1)
+                            ax.annotate(evt, xy=(x, toplot[col].max()), xytext=(5, 5),
+                                        textcoords='offset points', rotation=90, fontsize=7,
+                                        color=event_colors.get(evt, 'red'))
 
                 axarr[-1].xaxis.set_major_formatter(mdates.DateFormatter('%y-%m-%d %H:%M:%S'))
                 for label in axarr[-1].get_xticklabels():
