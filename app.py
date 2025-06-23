@@ -84,9 +84,8 @@ if log_files and event_files:
                     fig.add_vline(x=x_time, line=dict(color='red', width=1, dash='dash'))
                     fig.add_annotation(
                         x=x_time, y=toplot[col].max(), text=evt,
-                        showarrow=True, arrowhead=1, ax=0, ay=-40,
-                        font=dict(color='red', size=10),
-                        textangle=90
+                        showarrow=True, arrowhead=1, ax=20, ay=-60,
+                        font=dict(color='red', size
                     )
 
                 
