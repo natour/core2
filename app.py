@@ -74,15 +74,30 @@ if log_files and event_files:
             ))
 
             if not toplotE.empty:
+                unique_events = list(toplotE['FullEvent'].unique())
+                event_y = [unique_events.index(evt) for evt in toplotE['FullEvent']]
+
                 fig.add_trace(go.Scatter(
                     x=toplotE.index,
-                    y=[toplot[col].max()] * len(toplotE),
-                    mode='markers',
+                    y=event_y,
+                    mode='markers+text',
                     name='Events',
                     marker=dict(color='red', symbol='x', size=10),
                     text=toplotE['FullEvent'],
                     hovertemplate="%{text}<br>%{x|%Y-%m-%d %H:%M:%S}<extra></extra>"
                 ))
+
+                fig.update_layout(
+                    yaxis2=dict(
+                        title="Events",
+                        overlaying="y",
+                        side="right",
+                        tickmode="array",
+                        tickvals=list(range(len(unique_events))),
+                        ticktext=unique_events,
+                        showgrid=False
+                    )
+                )
 
             fig.update_layout(
                 title=f"{col} ({serial}) - {selected_day}",
@@ -115,15 +130,14 @@ if log_files and event_files:
                     ax.grid(True)
 
                     if not toplotE.empty:
-                        ax2 = ax.twinx()
-                        ax2.plot(toplotE.index, [1]*len(toplotE), 'rx')
-                        ax2.set_yticks([])
-                        ax2.set_ylabel("Events")
+                        unique_events = list(toplotE['FullEvent'].unique())
+                        event_y = [unique_events.index(e) for e in toplotE['FullEvent']]
 
-                        # Add text annotations for FullEvent content
-                        for x, txt in zip(toplotE.index, toplotE['FullEvent']):
-                            ax2.annotate(txt, xy=(x, 1), xytext=(5, 5), textcoords='offset points', fontsize=8,
-                                         rotation=45, color='red', alpha=0.8)
+                        ax2 = ax.twinx()
+                        ax2.plot(toplotE.index, event_y, 'rx')
+                        ax2.set_yticks(range(len(unique_events)))
+                        ax2.set_yticklabels(unique_events, fontsize=8)
+                        ax2.set_ylabel("Events")
 
                 axarr[-1].xaxis.set_major_formatter(mdates.DateFormatter('%y-%m-%d %H:%M:%S'))
                 for label in axarr[-1].get_xticklabels():
