@@ -92,8 +92,7 @@ if log_files and event_files:
                         hovertemplate=f"{evt}<br>%{{x|%Y-%m-%d %H:%M:%S}}<extra></extra>"
                     ))
 
-                fig.update_yaxes(title_text=col, secondary_y=False)
-
+                
             fig.update_layout(
                 title=f"{col} ({serial}) - {selected_day}",
                 xaxis_title="Time",
