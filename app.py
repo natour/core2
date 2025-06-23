@@ -85,7 +85,8 @@ if log_files and event_files:
                     fig.add_annotation(
                         x=x_time, y=toplot[col].max(), text=evt,
                         showarrow=True, arrowhead=1, ax=20, ay=-60,
-                        font=dict(color='red', size
+                        font=dict(color='red', size=12),
+                        textangle=90
                     )
 
                 
