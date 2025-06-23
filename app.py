@@ -65,7 +65,10 @@ if log_files and event_files:
         event = events_f[i]
 
         toplot = log.loc[str(selected_day)]
-        toplotE = event[event.index.to_period('D') == selected_day]
+        toplotE_all = event[event.index.to_period('D') == selected_day]
+        unique_event_names = toplotE_all['FullEvent'].unique().tolist()
+        selected_event_filter = st.multiselect("Filter Events", unique_event_names, default=unique_event_names)
+        toplotE = toplotE_all[toplotE_all['FullEvent'].isin(selected_event_filter)]
 
         for col in selected_channels:
             fig = go.Figure()
@@ -83,7 +86,7 @@ if log_files and event_files:
                 for evt, x_time in zip(toplotE['FullEvent'], toplotE.index):
                     fig.add_vline(x=x_time, line=dict(color='red', width=1, dash='dash'))
                     fig.add_annotation(
-                        x=x_time, y=toplot[col].max(), text=evt,
+                        x=x_time, y=toplot[col].max(), text='<br>'.join(evt[i:i+20] for i in range(0, len(evt), 20)),
                         showarrow=True, arrowhead=1, ax=20, ay=-60,
                         font=dict(color='red', size=12),
                         textangle=90
