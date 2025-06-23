@@ -75,7 +75,7 @@ if log_files and event_files:
 
             if not toplotE.empty:
                 fig.add_trace(go.Scatter(
-                    x=toplotE.index, y=toplotE['FullEvent'],
+                    x=toplotE.index, y=y=[toplot[col].max()]*len(toplotE),
                     mode='markers', name='Events',
                     marker=dict(color='red', symbol='x', size=10)
                 ))
