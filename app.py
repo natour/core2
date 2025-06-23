@@ -75,9 +75,13 @@ if log_files and event_files:
 
             if not toplotE.empty:
                 fig.add_trace(go.Scatter(
-                    x=toplotE.index, y=y=[toplot[col].max()]*len(toplotE),
-                    mode='markers', name='Events',
-                    marker=dict(color='red', symbol='x', size=10)
+                    x=toplotE.index,
+                    y=[toplot[col].max()] * len(toplotE),
+                    mode='markers',
+                    name='Events',
+                    marker=dict(color='red', symbol='x', size=10),
+                    text=toplotE['FullEvent'],
+                    hovertemplate="%{text}<br>%{x|%Y-%m-%d %H:%M:%S}<extra></extra>"
                 ))
 
             fig.update_layout(
@@ -115,6 +119,11 @@ if log_files and event_files:
                         ax2.plot(toplotE.index, [1]*len(toplotE), 'rx')
                         ax2.set_yticks([])
                         ax2.set_ylabel("Events")
+
+                        # Add text annotations for FullEvent content
+                        for x, txt in zip(toplotE.index, toplotE['FullEvent']):
+                            ax2.annotate(txt, xy=(x, 1), xytext=(5, 5), textcoords='offset points', fontsize=8,
+                                         rotation=45, color='red', alpha=0.8)
 
                 axarr[-1].xaxis.set_major_formatter(mdates.DateFormatter('%y-%m-%d %H:%M:%S'))
                 for label in axarr[-1].get_xticklabels():
