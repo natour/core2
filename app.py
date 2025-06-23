@@ -80,22 +80,20 @@ if log_files and event_files:
                 unique_events = list(toplotE['FullEvent'].unique())
                 event_y = [unique_events.index(evt) for evt in toplotE['FullEvent']]
 
-                for evt, x_time, y_pos in zip(toplotE['FullEvent'], toplotE.index, event_y):
-                    fig.add_trace(go.Scatter(
-                        x=[x_time],
-                        y=[evt],
-                        mode='markers+text',
-                        name='Event',
-                        marker=dict(color='red', symbol='x', size=10),
-                        text=[evt],
-                        textposition='middle right',
-                        hovertemplate=f"{evt}<br>%{{x|%Y-%m-%d %H:%M:%S}}<extra></extra>"
-                    ))
+                for evt, x_time in zip(toplotE['FullEvent'], toplotE.index):
+                    fig.add_vline(x=x_time, line=dict(color='red', width=1, dash='dash'))
+                    fig.add_annotation(
+                        x=x_time, y=toplot[col].max(), text=evt,
+                        showarrow=True, arrowhead=1, ax=0, ay=-40,
+                        font=dict(color='red', size=10),
+                        textangle=90
+                    )
 
                 
             fig.update_layout(
                 title=f"{col} ({serial}) - {selected_day}",
                 xaxis_title="Time",
+                yaxis_title=col,
                 height=500,
                 showlegend=False
             )
